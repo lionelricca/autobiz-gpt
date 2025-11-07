@@ -2,38 +2,712 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AutoBiz-GPT Starter Site</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Control Universal ESP32</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
-        header { background-color: #0066cc; color: #fff; padding: 20px; text-align: center; }
-        nav a { margin: 0 10px; color: #fff; text-decoration: none; }
-        main { background-color: #fff; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        footer { text-align: center; margin-top: 20px; color: #666; }
+        :root {
+            color-scheme: dark light;
+            --bg: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-soft: rgba(148, 163, 184, 0.14);
+            --primary: #38bdf8;
+            --secondary: #a855f7;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --success: #34d399;
+            --danger: #f87171;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent 40%),
+                        radial-gradient(circle at top right, rgba(168, 85, 247, 0.25), transparent 45%),
+                        linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 32px clamp(24px, 8vw, 80px) 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: grid;
+            place-items: center;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #0f172a;
+            box-shadow: 0 20px 40px rgba(56, 189, 248, 0.25);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.3rem);
+            margin: 0;
+            font-weight: 700;
+        }
+
+        header p {
+            max-width: 720px;
+            margin-top: 12px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        main {
+            padding: 0 clamp(24px, 8vw, 80px) 72px;
+            display: grid;
+            gap: 28px;
+        }
+
+        section {
+            background: var(--bg-card);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 20px;
+            padding: clamp(20px, 3vw, 32px);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 12px 50px rgba(15, 23, 42, 0.45);
+        }
+
+        section h2 {
+            margin: 0 0 12px;
+            font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+        }
+
+        .section-subtitle {
+            margin: 0 0 24px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+
+        .card {
+            background: var(--bg-soft);
+            border-radius: 18px;
+            padding: 18px 20px;
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input, select, button, textarea {
+            font-family: inherit;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            padding: 10px 12px;
+            font-size: 0.95rem;
+            background: rgba(15, 23, 42, 0.75);
+            color: var(--text);
+            transition: border 0.2s, transform 0.2s;
+            width: 100%;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(56, 189, 248, 0.8);
+            transform: translateY(-1px);
+        }
+
+        button {
+            cursor: pointer;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0f172a;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 18px 35px rgba(56, 189, 248, 0.25);
+        }
+
+        button.secondary {
+            background: rgba(148, 163, 184, 0.18);
+            color: var(--text);
+            box-shadow: none;
+        }
+
+        .dual-input {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+        }
+
+        .pin-actions {
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .pin-actions button {
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .pin-actions .inline-controls {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .inline {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .inline label {
+            margin: 0;
+        }
+
+        .log {
+            max-height: 280px;
+            overflow: auto;
+            display: grid;
+            gap: 12px;
+        }
+
+        .log-entry {
+            padding: 12px;
+            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.8);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            display: grid;
+            gap: 4px;
+        }
+
+        .log-entry span {
+            color: var(--text-muted);
+        }
+
+        .automations {
+            display: grid;
+            gap: 14px;
+        }
+
+        .automation-item {
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            display: grid;
+            gap: 6px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            background: rgba(56, 189, 248, 0.14);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .chip.pulse {
+            background: rgba(168, 85, 247, 0.14);
+            color: var(--secondary);
+        }
+
+        footer {
+            padding: 32px clamp(24px, 8vw, 80px);
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            background: rgba(2, 6, 23, 0.75);
+            backdrop-filter: blur(18px);
+        }
+
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            border-radius: 12px;
+            padding: 6px 12px;
+            background: rgba(148, 163, 184, 0.14);
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 720px) {
+            header {
+                padding-top: 24px;
+            }
+
+            footer {
+                text-align: center;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Bienvenido a AutoBiz-GPT</h1>
-        <nav>
-            <a href="index.html">Inicio</a>
-            <a href="#productos">Productos</a>
-            <a href="#servicios">Servicios</a>
-            <a href="#contacto">Contacto</a>
-        </nav>
+        <div class="brand">
+            <div class="brand-icon">ESP</div>
+            <div>
+                <h1>Orion<span style="color: var(--primary);">Hub</span> · Plataforma Universal ESP32</h1>
+                <p>Conecta, orquesta y automatiza cualquier módulo ESP32 desde una interfaz web inmersiva. Diseñada para makers, integradores y equipos IoT que buscan un dashboard listo para producción con control total sobre pines digitales, PWM, sensores y escenas inteligentes.</p>
+            </div>
+        </div>
     </header>
+
     <main>
-        <h2>Acerca de AutoBiz-GPT</h2>
-        <p>Este es un sitio de demostración para AutoBiz-GPT. Aquí podrás encontrar información sobre oportunidades de monetización rápida como print-on-demand, marketing de afiliados y microservicios.</p>
-        <h3 id="productos">Productos Print-on-Demand</h3>
-        <p>Crearemos diseños originales para camisetas, tazas y más utilizando plataformas de impresión bajo demanda. ¡Pronto añadiremos productos a nuestra tienda!</p>
-        <h3 id="servicios">Servicios</h3>
-        <p>Ofrecemos microservicios de traducción, redacción y creación de contenido automatizado para tus proyectos.</p>
-        <h3 id="contacto">Contacto</h3>
-        <p>Para más información, síguenos en nuestras redes sociales o envíanos un correo a contacto@autobizgpt.example.</p>
+        <section id="connection">
+            <h2>Centro de Conexiones</h2>
+            <p class="section-subtitle">Agrupa todos tus ESP32, gestiona redes, credenciales y mantén una visión clara del estado en tiempo real.</p>
+            <div class="grid grid-3">
+                <div class="card">
+                    <h3>Vincular nuevo dispositivo <span class="status-dot" id="connection-status" style="background: var(--danger);"></span></h3>
+                    <form id="connection-form" class="grid" style="gap: 14px;">
+                        <div>
+                            <label for="device-name">Alias del ESP32</label>
+                            <input id="device-name" name="device" placeholder="Ej. Invernadero Norte" required>
+                        </div>
+                        <div>
+                            <label for="device-ip">Dirección IP / mDNS</label>
+                            <input id="device-ip" name="ip" placeholder="192.168.1.92 o esp32.local" required>
+                        </div>
+                        <div class="dual-input">
+                            <div>
+                                <label for="device-token">Token / API Key</label>
+                                <input id="device-token" name="token" placeholder="Opcional">
+                            </div>
+                            <div>
+                                <label for="device-port">Puerto</label>
+                                <input id="device-port" name="port" type="number" value="8080" min="1" max="65535">
+                            </div>
+                        </div>
+                        <button type="submit">Conectar dispositivo</button>
+                        <small style="color: var(--text-muted); display: block;">Compatible con websockets seguros, MQTT y APIs REST. OrionHub detecta automáticamente el protocolo expuesto por tu firmware.</small>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Red &amp; Seguridad</h3>
+                    <div class="grid" style="gap: 10px;">
+                        <div>
+                            <label for="wifi-ssid">Red Wi-Fi</label>
+                            <input id="wifi-ssid" placeholder="Nombre de tu red">
+                        </div>
+                        <div>
+                            <label for="wifi-pass">Contraseña</label>
+                            <input id="wifi-pass" placeholder="••••••••" type="password">
+                        </div>
+                        <div>
+                            <label for="protocol-select">Protocolo preferido</label>
+                            <select id="protocol-select">
+                                <option value="websocket">WebSocket seguro</option>
+                                <option value="mqtt">MQTT TLS</option>
+                                <option value="rest">REST HTTPS</option>
+                            </select>
+                        </div>
+                        <button type="button" class="secondary" id="share-credentials">Compartir credenciales con dispositivos conectados</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Dispositivos en línea</h3>
+                    <div id="device-list" class="grid" style="gap: 12px;">
+                        <p style="color: var(--text-muted);">Aún no hay dispositivos conectados. ¡Comienza vinculando tu primer ESP32!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pin-control">
+            <h2>Panel Maestro de Pines</h2>
+            <p class="section-subtitle">Activa salidas, configura entradas, define PWM o ADC con microinteracciones diseñadas para el flujo de trabajo maker.</p>
+            <div id="pin-grid" class="grid grid-3"></div>
+        </section>
+
+        <section id="automations">
+            <h2>Automatizaciones inteligentes</h2>
+            <p class="section-subtitle">Programa escenas, reglas y horarios que vivirán directamente en tu ESP32 o en la nube de OrionHub.</p>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Nueva rutina</h3>
+                    <form id="automation-form" class="grid" style="gap: 16px;">
+                        <div>
+                            <label for="automation-name">Nombre</label>
+                            <input id="automation-name" placeholder="Iluminación nocturna">
+                        </div>
+                        <div class="dual-input">
+                            <div>
+                                <label for="automation-pin">Pin</label>
+                                <select id="automation-pin"></select>
+                            </div>
+                            <div>
+                                <label for="automation-action">Acción</label>
+                                <select id="automation-action">
+                                    <option value="on">Encender</option>
+                                    <option value="off">Apagar</option>
+                                    <option value="pulse">Pulso PWM</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="dual-input">
+                            <div>
+                                <label for="automation-schedule">Frecuencia</label>
+                                <select id="automation-schedule">
+                                    <option value="once">Una vez</option>
+                                    <option value="daily">Diario</option>
+                                    <option value="weekly">Semanal</option>
+                                    <option value="custom">Condición</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="automation-time">Horario / Condición</label>
+                                <input id="automation-time" type="text" placeholder="22:30 o sensor > 60%">
+                            </div>
+                        </div>
+                        <textarea id="automation-notes" rows="3" placeholder="Notas, condiciones extra o payload JSON"></textarea>
+                        <button type="submit">Guardar automatización</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Escenas activas</h3>
+                    <div id="automation-list" class="automations">
+                        <p style="color: var(--text-muted);">No hay automatizaciones. Agrega una para comenzar.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="activity">
+            <h2>Actividad &amp; Diagnóstico</h2>
+            <p class="section-subtitle">Sigue cada interacción en tiempo real, valida el tiempo de respuesta del firmware y mantén tu red saludable.</p>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Live log</h3>
+                    <div id="event-log" class="log"></div>
+                </div>
+                <div class="card">
+                    <h3>Estado de telemetría</h3>
+                    <div class="grid" style="gap: 12px;">
+                        <div class="inline">
+                            <span class="status-dot" id="telemetry-heart" style="background: var(--danger);"></span>
+                            <span id="telemetry-label">Sin latido detectado</span>
+                        </div>
+                        <div class="grid" style="gap: 8px;">
+                            <label>Último ping</label>
+                            <div class="badge" id="last-ping">Nunca</div>
+                        </div>
+                        <div class="grid" style="gap: 8px;">
+                            <label>Firmware detectado</label>
+                            <div class="badge" id="firmware">—</div>
+                        </div>
+                        <button type="button" class="secondary" id="ping-devices">Ping global</button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
     <footer>
-        <p>&copy; 2025 AutoBiz-GPT. Todos los derechos reservados.</p>
+        <span>&copy; 2025 OrionHub Labs · Crea experiencias IoT memorables con ESP32.</span>
+        <div class="badge-list">
+            <span class="badge">Websocket Ready</span>
+            <span class="badge">MQTT TLS</span>
+            <span class="badge">OTA Firmware</span>
+            <span class="badge">Multi-dispositivo</span>
+        </div>
     </footer>
+
+    <script>
+        const pins = [
+            { id: 0, label: 'GPIO 0', mode: 'salida', state: false },
+            { id: 2, label: 'GPIO 2', mode: 'salida', state: false },
+            { id: 4, label: 'GPIO 4', mode: 'salida', state: false },
+            { id: 5, label: 'GPIO 5', mode: 'pwm', state: false },
+            { id: 12, label: 'GPIO 12', mode: 'entrada', state: false },
+            { id: 13, label: 'GPIO 13', mode: 'pwm', state: false },
+            { id: 14, label: 'GPIO 14', mode: 'salida', state: false },
+            { id: 15, label: 'GPIO 15', mode: 'salida', state: false },
+            { id: 16, label: 'GPIO 16', mode: 'entrada', state: false },
+            { id: 17, label: 'GPIO 17', mode: 'salida', state: false },
+            { id: 18, label: 'GPIO 18', mode: 'pwm', state: false },
+            { id: 19, label: 'GPIO 19', mode: 'entrada', state: false },
+            { id: 21, label: 'GPIO 21', mode: 'salida', state: false },
+            { id: 22, label: 'GPIO 22', mode: 'salida', state: false },
+            { id: 23, label: 'GPIO 23', mode: 'salida', state: false }
+        ];
+
+        const pinGrid = document.getElementById('pin-grid');
+        const automationPinSelect = document.getElementById('automation-pin');
+        const eventLog = document.getElementById('event-log');
+        const telemetryHeart = document.getElementById('telemetry-heart');
+        const telemetryLabel = document.getElementById('telemetry-label');
+        const lastPing = document.getElementById('last-ping');
+        const firmwareLabel = document.getElementById('firmware');
+        const deviceList = document.getElementById('device-list');
+        const connectionStatusDot = document.getElementById('connection-status');
+
+        const connectedDevices = [];
+        const automations = [];
+
+        function renderPins() {
+            pinGrid.innerHTML = '';
+            pins.forEach(pin => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${pin.label}<span class="chip ${pin.mode === 'pwm' ? 'pulse' : ''}">${pin.mode.toUpperCase()}</span></h3>
+                    <div class="grid" style="gap: 12px;">
+                        <div>
+                            <label>Modo</label>
+                            <select data-pin="${pin.id}" class="pin-mode">
+                                <option value="salida" ${pin.mode === 'salida' ? 'selected' : ''}>Salida digital</option>
+                                <option value="entrada" ${pin.mode === 'entrada' ? 'selected' : ''}>Entrada digital</option>
+                                <option value="pwm" ${pin.mode === 'pwm' ? 'selected' : ''}>PWM / DAC</option>
+                                <option value="adc">ADC</option>
+                            </select>
+                        </div>
+                        <div class="pin-actions">
+                            <div class="inline-controls">
+                                <button type="button" class="pin-toggle" data-action="on" data-pin="${pin.id}">Encender</button>
+                                <button type="button" class="pin-toggle secondary" data-action="off" data-pin="${pin.id}">Apagar</button>
+                            </div>
+                            <div>
+                                <label>Intensidad PWM</label>
+                                <input type="range" min="0" max="255" value="${pin.pwm || 0}" data-pin="${pin.id}" class="pin-pwm">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                pinGrid.appendChild(card);
+            });
+        }
+
+        function populateAutomationPins() {
+            automationPinSelect.innerHTML = pins.map(pin => `<option value="${pin.id}">${pin.label}</option>`).join('');
+        }
+
+        function logEvent(message, meta = '') {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const now = new Date().toLocaleTimeString();
+            entry.innerHTML = `<strong>${message}</strong><span>${now}${meta ? ' · ' + meta : ''}</span>`;
+            eventLog.prepend(entry);
+            while (eventLog.children.length > 12) {
+                eventLog.removeChild(eventLog.lastChild);
+            }
+        }
+
+        function updateDeviceList() {
+            if (!connectedDevices.length) {
+                deviceList.innerHTML = '<p style="color: var(--text-muted);">Aún no hay dispositivos conectados. ¡Comienza vinculando tu primer ESP32!</p>';
+                connectionStatusDot.style.background = 'var(--danger)';
+                return;
+            }
+            connectionStatusDot.style.background = 'var(--success)';
+            deviceList.innerHTML = '';
+            connectedDevices.forEach(device => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <strong>${device.name}</strong>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">${device.ip}:${device.port} · ${device.protocol.toUpperCase()}</span>
+                    <div class="chip">RSSI ${Math.round(device.signal)} dBm</div>
+                `;
+                deviceList.appendChild(card);
+            });
+        }
+
+        function updateTelemetry(device) {
+            telemetryHeart.style.background = 'var(--success)';
+            telemetryLabel.textContent = `Latido estable desde ${device.name}`;
+            lastPing.textContent = new Date().toLocaleTimeString();
+            firmwareLabel.textContent = device.firmware || 'ESP32 Custom';
+        }
+
+        document.getElementById('connection-form').addEventListener('submit', event => {
+            event.preventDefault();
+            const data = new FormData(event.target);
+            const device = {
+                name: data.get('device'),
+                ip: data.get('ip'),
+                port: Number(data.get('port')) || 80,
+                token: data.get('token'),
+                protocol: document.getElementById('protocol-select').value,
+                signal:  -45 + Math.random() * 10,
+                firmware: 'ESP-IDF Orion 1.2.0'
+            };
+            connectedDevices.push(device);
+            updateDeviceList();
+            updateTelemetry(device);
+            logEvent(`Dispositivo ${device.name} conectado`, `${device.ip}:${device.port}`);
+            event.target.reset();
+        });
+
+        document.getElementById('share-credentials').addEventListener('click', () => {
+            if (!connectedDevices.length) {
+                logEvent('No hay dispositivos para sincronizar', 'Configura tu primer ESP32');
+                return;
+            }
+            logEvent('Credenciales Wi-Fi actualizadas en dispositivos conectados');
+        });
+
+        pinGrid.addEventListener('click', event => {
+            const button = event.target.closest('.pin-toggle');
+            if (!button) return;
+            const pinId = Number(button.dataset.pin);
+            const pin = pins.find(p => p.id === pinId);
+            pin.state = button.dataset.action === 'on';
+            logEvent(`Pin ${pin.label} ${pin.state ? 'encendido' : 'apagado'}`);
+        });
+
+        pinGrid.addEventListener('change', event => {
+            if (!event.target.classList.contains('pin-mode')) return;
+            const pinId = Number(event.target.dataset.pin);
+            const pin = pins.find(p => p.id === pinId);
+            pin.mode = event.target.value;
+            renderPins();
+            populateAutomationPins();
+            logEvent(`Pin ${pin.label} configurado como ${pin.mode.toUpperCase()}`);
+        });
+
+        pinGrid.addEventListener('input', event => {
+            if (!event.target.classList.contains('pin-pwm')) return;
+            const pinId = Number(event.target.dataset.pin);
+            const pin = pins.find(p => p.id === pinId);
+            pin.pwm = Number(event.target.value);
+            logEvent(`PWM ajustado en ${pin.label}`, `Valor ${pin.pwm}`);
+        });
+
+        document.getElementById('automation-form').addEventListener('submit', event => {
+            event.preventDefault();
+            const name = document.getElementById('automation-name').value.trim() || 'Automatización sin nombre';
+            const pin = document.getElementById('automation-pin').value;
+            const action = document.getElementById('automation-action').value;
+            const schedule = document.getElementById('automation-schedule').value;
+            const time = document.getElementById('automation-time').value.trim() || 'Inmediato';
+            const notes = document.getElementById('automation-notes').value.trim();
+
+            const automation = { id: crypto.randomUUID(), name, pin, action, schedule, time, notes };
+            automations.push(automation);
+            renderAutomations();
+            logEvent(`Automatización creada: ${name}`, `${action.toUpperCase()} en GPIO ${pin}`);
+            event.target.reset();
+        });
+
+        function renderAutomations() {
+            const automationList = document.getElementById('automation-list');
+            if (!automations.length) {
+                automationList.innerHTML = '<p style="color: var(--text-muted);">No hay automatizaciones. Agrega una para comenzar.</p>';
+                return;
+            }
+            automationList.innerHTML = '';
+            automations.forEach(auto => {
+                const pinLabel = pins.find(pin => pin.id === Number(auto.pin))?.label || `GPIO ${auto.pin}`;
+                const item = document.createElement('div');
+                item.className = 'automation-item';
+                item.innerHTML = `
+                    <strong>${auto.name}</strong>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">${pinLabel} · ${auto.schedule.toUpperCase()} · ${auto.time}</span>
+                    <div class="chip ${auto.action === 'pulse' ? 'pulse' : ''}">${auto.action.toUpperCase()}</div>
+                    ${auto.notes ? `<p style="margin: 0; color: var(--text-muted); font-size: 0.85rem;">${auto.notes}</p>` : ''}
+                    <button type="button" class="secondary" data-id="${auto.id}" onclick="deleteAutomation('${auto.id}')">Eliminar</button>
+                `;
+                automationList.appendChild(item);
+            });
+        }
+
+        window.deleteAutomation = function(id) {
+            const index = automations.findIndex(auto => auto.id === id);
+            if (index !== -1) {
+                const [deleted] = automations.splice(index, 1);
+                renderAutomations();
+                logEvent(`Automatización eliminada`, deleted.name);
+            }
+        };
+
+        document.getElementById('ping-devices').addEventListener('click', () => {
+            if (!connectedDevices.length) {
+                logEvent('No se detectaron dispositivos para ping global');
+                telemetryHeart.style.background = 'var(--danger)';
+                telemetryLabel.textContent = 'Sin latido detectado';
+                lastPing.textContent = 'Nunca';
+                firmwareLabel.textContent = '—';
+                return;
+            }
+            const device = connectedDevices[Math.floor(Math.random() * connectedDevices.length)];
+            updateTelemetry(device);
+            logEvent('Ping global ejecutado', `Respuesta desde ${device.name}`);
+        });
+
+        function heartbeat() {
+            if (!connectedDevices.length) {
+                telemetryHeart.style.background = 'var(--danger)';
+                telemetryLabel.textContent = 'Sin latido detectado';
+                return;
+            }
+            telemetryHeart.style.animation = 'pulse 1.6s infinite';
+        }
+
+        renderPins();
+        populateAutomationPins();
+        heartbeat();
+    </script>
 </body>
 </html>
