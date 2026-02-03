@@ -2,38 +2,254 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>AutoBiz-GPT Starter Site</title>
+    <title>EnlaceX - Alerta futurista de desconexión</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
-        header { background-color: #0066cc; color: #fff; padding: 20px; text-align: center; }
-        nav a { margin: 0 10px; color: #fff; text-decoration: none; }
-        main { background-color: #fff; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        footer { text-align: center; margin-top: 20px; color: #666; }
+        :root {
+            color-scheme: dark;
+            --bg: #05070f;
+            --panel: rgba(10, 16, 30, 0.8);
+            --accent: #5de1ff;
+            --accent-2: #b96bff;
+            --text: #e8f0ff;
+            --muted: #9fb0d0;
+            --glow: 0 0 20px rgba(93, 225, 255, 0.45);
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+            background: radial-gradient(circle at top, rgba(93, 225, 255, 0.2), transparent 50%),
+                        radial-gradient(circle at 20% 20%, rgba(185, 107, 255, 0.2), transparent 40%),
+                        var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        header {
+            padding: 32px 24px;
+            position: sticky;
+            top: 0;
+            background: rgba(5, 7, 15, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+            border-bottom: 1px solid rgba(93, 225, 255, 0.2);
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.95rem;
+        }
+        nav a:hover {
+            color: var(--text);
+        }
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+        .hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 32px;
+            align-items: center;
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            margin-bottom: 16px;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+        .cta {
+            margin-top: 24px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .button {
+            padding: 12px 22px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+        .button.primary {
+            background: linear-gradient(120deg, var(--accent), var(--accent-2));
+            color: #05070f;
+            box-shadow: var(--glow);
+        }
+        .button.secondary {
+            background: transparent;
+            border-color: rgba(93, 225, 255, 0.4);
+            color: var(--text);
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        .panel {
+            background: var(--panel);
+            border: 1px solid rgba(93, 225, 255, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        }
+        .glow {
+            box-shadow: var(--glow);
+        }
+        .features,
+        .steps,
+        .platforms {
+            margin-top: 56px;
+        }
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+        .grid.three {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+        .grid.two {
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+        .card h3 {
+            margin-top: 0;
+        }
+        .card p {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+        .timeline {
+            display: grid;
+            gap: 16px;
+        }
+        footer {
+            text-align: center;
+            padding: 32px 24px 40px;
+            color: var(--muted);
+            border-top: 1px solid rgba(93, 225, 255, 0.2);
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Bienvenido a AutoBiz-GPT</h1>
-        <nav>
-            <a href="index.html">Inicio</a>
-            <a href="#productos">Productos</a>
-            <a href="#servicios">Servicios</a>
-            <a href="#contacto">Contacto</a>
-        </nav>
+        <div class="nav">
+            <div class="brand">ENLACEX</div>
+            <nav>
+                <a href="#vision">Visión</a>
+                <a href="#funciones">Funciones</a>
+                <a href="#experiencia">Experiencia</a>
+                <a href="#plataformas">Plataformas</a>
+            </nav>
+        </div>
     </header>
     <main>
-        <h2>Acerca de AutoBiz-GPT</h2>
-        <p>Este es un sitio de demostración para AutoBiz-GPT. Aquí podrás encontrar información sobre oportunidades de monetización rápida como print-on-demand, marketing de afiliados y microservicios.</p>
-        <h3 id="productos">Productos Print-on-Demand</h3>
-        <p>Crearemos diseños originales para camisetas, tazas y más utilizando plataformas de impresión bajo demanda. ¡Pronto añadiremos productos a nuestra tienda!</p>
-        <h3 id="servicios">Servicios</h3>
-        <p>Ofrecemos microservicios de traducción, redacción y creación de contenido automatizado para tus proyectos.</p>
-        <h3 id="contacto">Contacto</h3>
-        <p>Para más información, síguenos en nuestras redes sociales o envíanos un correo a contacto@autobizgpt.example.</p>
+        <section class="hero" id="vision">
+            <div>
+                <div class="tag">Alerta futurista</div>
+                <h1>La app que detecta desconexiones y protege tu celular y tu reloj.</h1>
+                <p>EnlaceX crea un vínculo inteligente entre tu smartwatch y tu teléfono. Si se separan, ambos dispositivos reciben una alerta inmediata con una interfaz holográfica que no puedes ignorar.</p>
+                <div class="cta">
+                    <a class="button primary" href="#funciones">Explorar funciones</a>
+                    <a class="button secondary" href="#plataformas">Compatibilidad total</a>
+                </div>
+            </div>
+            <div class="panel glow">
+                <h2>Notificación en doble canal</h2>
+                <p>Un pulso háptico triple + sonido espacial + animación neón en ambos dispositivos, incluso cuando están en silencio.</p>
+                <div class="timeline">
+                    <div class="panel">
+                        <strong>00:00</strong>
+                        <p>La señal se debilita y aparece un mapa de proximidad con radar dinámico.</p>
+                    </div>
+                    <div class="panel">
+                        <strong>00:03</strong>
+                        <p>Se activa el modo “Búsqueda”: luces LED, vibración modulada y mensaje de voz.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="funciones">
+            <div class="tag">Funciones clave</div>
+            <div class="grid three">
+                <article class="panel card">
+                    <h3>Radar de distancia</h3>
+                    <p>Visual futurista con anillos concéntricos que muestran en tiempo real la fuerza de conexión Bluetooth y ultra banda ancha.</p>
+                </article>
+                <article class="panel card">
+                    <h3>Modo anti-olvido</h3>
+                    <p>Configura zonas seguras (casa, oficina) y alerta automática si sales sin tu reloj o tu móvil.</p>
+                </article>
+                <article class="panel card">
+                    <h3>Señal espejo</h3>
+                    <p>Si uno se desconecta, el otro reproduce el mismo patrón de luz y sonido para encontrarlo rápido.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="steps" id="experiencia">
+            <div class="tag">Experiencia</div>
+            <div class="grid two">
+                <article class="panel card">
+                    <h3>Personalización futurista</h3>
+                    <p>Elige skins holográficas, colores neón y sonidos sintetizados. La alerta se siente como un HUD de ciencia ficción.</p>
+                </article>
+                <article class="panel card">
+                    <h3>IA predictiva</h3>
+                    <p>Aprende tus rutas y predice cuando estás a punto de olvidarte un dispositivo para avisarte antes de que ocurra.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="platforms" id="plataformas">
+            <div class="tag">Disponible en</div>
+            <div class="grid three">
+                <article class="panel card">
+                    <h3>Android</h3>
+                    <p>Compatibilidad con Wear OS y Android 10+ para teléfonos y tabletas.</p>
+                </article>
+                <article class="panel card">
+                    <h3>Apple</h3>
+                    <p>Funciona con iOS 15+ y watchOS 9+, sincronizando alertas con Apple Watch.</p>
+                </article>
+                <article class="panel card">
+                    <h3>Multidispositivo</h3>
+                    <p>Conecta hasta 4 relojes y 2 teléfonos a la vez para familias o equipos.</p>
+                </article>
+            </div>
+        </section>
     </main>
     <footer>
-        <p>&copy; 2025 AutoBiz-GPT. Todos los derechos reservados.</p>
+        <p>&copy; 2025 EnlaceX. Seguridad futurista para tus dispositivos conectados.</p>
     </footer>
 </body>
 </html>
